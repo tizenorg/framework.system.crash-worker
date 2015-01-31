@@ -1,0 +1,8 @@
+[Unit]
+Description=all log dump
+
+[Service]
+Type=oneshot
+Nice=-5
+KillMode=process
+ExecStart=/usr/bin/all_log_dump.sh hardkey
