@@ -1,0 +1,13 @@
+[Unit]
+Description=Crash manager socket
+
+[Socket]
+ListenStream=/tmp/crash_socket
+SocketMode=0777
+PassCredentials=yes
+Accept=false
+SmackLabelIPIn=*
+SmackLabelIPOut=@
+
+[Install]
+WantedBy=sockets.target

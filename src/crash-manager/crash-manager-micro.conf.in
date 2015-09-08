@@ -1,0 +1,10 @@
+[CrashManager]
+RunTimeoutSec=30
+SystemMaxUse=102400
+#SystemKeepFree=1048576
+MaxRetentionSec=1296000
+MaxCrashDump=2
+MaxCrashReport=4
+MaxConcurrentJob=2
+AllowPopup=no
+AllowZip=yes

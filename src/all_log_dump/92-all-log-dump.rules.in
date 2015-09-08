@@ -1,0 +1,2 @@
+#all_log_dump
+ACTION=="change" DEVPATH=="/devices/virtual/sec/sec_input_bridge", ENV{APPS_LOG}=="ON" RUN+="/usr/bin/systemctl --no-block start all_log_dump.service"

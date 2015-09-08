@@ -1,0 +1,9 @@
+[Unit]
+Description=Start the crash manager service
+After=dbus.socket
+
+[Service]
+ExecStart=/usr/bin/crash-manager
+
+[Install]
+WantedBy=multi-user.target

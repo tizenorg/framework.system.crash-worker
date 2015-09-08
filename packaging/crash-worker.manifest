@@ -1,0 +1,55 @@
+<manifest>
+	<define>
+		<domain name="crash-worker"/>
+		<provide>
+		        <label name="crash-worker::crashctl" />
+	        </provide>
+	<request>
+		<smack request="sys-assert::core" type="rwxat" />
+		<smack request="device::app_logging" type="rwxat" />
+		<smack request="device::sys_logging" type="rwxat" />
+		<smack request="system::homedir" type="rwxat" />
+		<smack request="system::vconf" type="rwxat" />
+		<smack request="system::media" type="rwxat" />
+		<smack request="system::share" type="rwxat" />
+		<smack request="system::use_internet" type="rw" />
+		<smack request="xorg" type="rw" />
+		<smack request="pkgmgr::db" type="rw" />
+		<smack request="dbus" type="rwx" />
+		<smack request="com.samsung.crash-popup" type="rx" />
+	</request>
+	<permit>
+		<smack permit="system::use_internet" type="rwx"/>
+	</permit>
+	</define>
+	<request>
+		<domain name="crash-worker"/>
+	</request>
+	<assign>
+		<filesystem path="/opt/usr/share/crash" label="sys-assert::core" exec_label="none"/>
+		<filesystem path="/opt/usr/share/crash/report" label="sys-assert::core" exec_label="none"/>
+		<filesystem path="/opt/usr/share/crash/core" label="sys-assert::core" exec_label="none"/>
+		<filesystem path="/opt/usr/share/crash/dump" label="sys-assert::core" exec_label="none"/>
+		<filesystem path="/usr/bin/all_log_dump.sh" label="_" exec_label="none"/>
+		<filesystem path="/usr/lib/systemd/system/all_log_dump.service" label="_" exec_label="none"/>
+		<filesystem path="/usr/bin/crashctl" label="_" exec_label="none"/>
+		<filesystem path="/usr/bin/dump_log.sh" label="_" exec_label="none"/>
+		<filesystem path="/usr/bin/dump_systemstate" label="_" exec_label="none"/>
+		<filesystem path="/usr/lib/udev/rules.d/92-all-log-dump.rules" label="_" exec_label="none"/>
+		<filesystem path="/usr/share/dbus-1/services/org.tizen.system.crash.service" label="_" exec_label="none"/>
+		<dbus name="org.tizen.system.crash" own="crash-worker" bus="system">
+			<node name="/Org/Tizen/System/Crash/Crash">
+				<interface name="org.tizen.system.crash.Crash">
+				<!-- dbus smack label "crash-worker::crashctl" -->
+					<method name="dump_log">
+						<annotation name="com.tizen.smack" value="crash-worker::crashctl" />
+					</method>
+					<method name="delete_dump">
+						<annotation name="com.tizen.smack" value="crash-worker::crashctl" />
+					</method>
+				</interface>
+			</node>
+		</dbus>
+
+	</assign>
+</manifest>
