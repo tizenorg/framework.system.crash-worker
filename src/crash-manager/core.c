@@ -66,7 +66,9 @@ int main(int argc, char **argv)
 {
 	Manager *manager;
 
+#if !GLIB_CHECK_VERSION(2,35,0)
 	g_type_init();
+#endif
 
 	signal_init();
 

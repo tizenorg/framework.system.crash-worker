@@ -1,0 +1,14 @@
+[Unit]
+Description=Make crash info directory
+DefaultDependencies=no
+After=smack-default-labeling.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/crash_env.sh
+ExecStartPost=/usr/bin/chsmack -t /tmp/crash_info
+ExecStartPost=/usr/bin/chsmack -a "sys-assert::core" /tmp/crash_info
+
+
+[Install]
+WantedBy=basic.target

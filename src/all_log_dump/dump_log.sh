@@ -60,7 +60,7 @@ done
 #-------------------------------------
 AP_LOG_DIR=${LOG_DST_DIR}/ap_log
 mkdir_function ${AP_LOG_DIR}
-/bin/cp -rf /tmp/*.info ${AP_LOG_DIR}
+/bin/cp -rf /tmp/crach_info/*.info ${AP_LOG_DIR}
 /bin/cp -rf /opt/usr/share/crash/core/* ${AP_LOG_DIR}
 /bin/cp -rf /opt/usr/share/crash/dump/* ${AP_LOG_DIR}
 /bin/cp -rf /opt/usr/share/crash/report/* ${AP_LOG_DIR}

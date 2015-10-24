@@ -22,7 +22,6 @@ pkg_check_modules(crash-manager_pkgs REQUIRED
 		gio-2.0
 		libsystemd-daemon
 		libsystemd-journal
-		journal
 		vconf
 		dlog
 		pkgmgr-info
@@ -35,7 +34,8 @@ ENDFOREACH(flag)
 
 SET(EXTRA_CFLAGS "${EXTRA_CFLAGS} -g -fno-omit-frame-pointer -finstrument-functions")
 
-SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_CFLAGS}")
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_CFLAGS} -fPIE")
+SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--as-needed -pie")
 MESSAGE("FLAGS: ${CMAKE_C_FLAGS}")
 
 IF("$ENV{CFLAGS}" MATCHES "-DMICRO_DD")
@@ -54,9 +54,12 @@ ADD_EXECUTABLE(${PROJECT_NAME} ${CRASH_SRCS})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${crash-manager_pkgs_LDFLAGS})
 
 INSTALL(TARGETS ${PROJECT_NAME} DESTINATION bin)
-INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/org.tizen.system.crash.service DESTINATION /usr/share/dbus-1/services)
+INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/org.tizen.system.crash.service DESTINATION /usr/share/dbus-1/system-services)
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/crash-manager.socket DESTINATION /usr/lib/systemd/system)
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/crash-manager.service DESTINATION /usr/lib/systemd/system)
+INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/crash-env.service DESTINATION /usr/lib/systemd/system)
+INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/crash_env.sh DESTINATION /usr/bin)
+
 IF(USE_MICRO_DD)
 	IF(USE_DEBUG_CONF)
 		INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/crash-manager-micro-debug.conf.in DESTINATION /etc/crash RENAME crash-manager.conf)

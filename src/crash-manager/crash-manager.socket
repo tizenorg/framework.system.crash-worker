@@ -3,6 +3,8 @@ Description=Crash manager socket
 
 [Socket]
 ListenStream=/tmp/crash_socket
+SocketUser=system
+SocketGroup=system
 SocketMode=0777
 PassCredentials=yes
 Accept=false

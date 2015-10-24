@@ -2,6 +2,7 @@
 Description=all log dump
 
 [Service]
+SmackProcessLabel=crash-worker
 Type=oneshot
 Nice=-5
 KillMode=process

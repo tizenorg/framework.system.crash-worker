@@ -39,10 +39,9 @@
 #include <dirent.h>
 #include <vconf.h>
 #include <pkgmgr-info.h>
-#include <system_info_internal.h>
+#include <system_info.h>
 #include <pwd.h>
 #include <systemd/sd-journal.h>
-#include <journal/system.h>
 
 #include "shared/util.h"
 #include "shared/launch.h"
@@ -68,7 +67,7 @@
 #define TIZEN_DEBUG_MODE_FILE       "/opt/etc/.debugmode"
 #define CRASH_PATH                  "/opt/usr/share/crash"
 #define CRASH_CHECK_DISK_PATH       "/opt/usr"
-#define CRASH_POPUP_PATH            "/usr/apps/com.samsung.crash-popup/bin/crash-popup"
+#define CRASH_POPUP_PATH            "/usr/apps/org.tizen.crash-popup/bin/crash-popup"
 #define CRASH_CRASHINFO_TITLE       "Crash Information"
 #define CRASH_DLOG_TITLE            "Latest Debug Message Information"
 #define CRASH_DLOG_TITLE_E          "End of latest debug message"
@@ -152,6 +151,8 @@ static int parse_crash_info(char *msg, struct crash_info *info)
 	char *ptr = NULL;
 	char buffer[NAME_MAX];
 	time_t crash_time;
+	time_t cur_time;
+	struct tm cur_tm;
 
 	if (msg == NULL || info == NULL) {
 		_E("Error! Invalid arguments");
@@ -185,7 +186,10 @@ static int parse_crash_info(char *msg, struct crash_info *info)
 	snprintf(info->timesec, TIME_STR_MAX, "%s", ptr);
 	crash_time = atol(info->timesec);
 	localtime_r(&crash_time, &(info->crash_tm));
-	strftime(info->timestr, sizeof(info->timestr), "%Y%m%d%H%M%S", &(info->crash_tm));
+
+	cur_time = time(NULL);
+	localtime_r(&cur_time, &cur_tm);
+	strftime(info->timestr, sizeof(info->timestr), "%Y%m%d%H%M%S", &cur_tm);
 
 	ptr = strtok(NULL, CRASH_DELIMITER);
 	if (ptr == NULL) {
@@ -397,9 +401,20 @@ out:
 static int create_report_file(struct crash_info *cinfo)
 {
 	int csfd;
+	int ret;
 
-	if (cinfo == NULL)
+	if (cinfo == NULL || cinfo->reportfile == NULL)
 		return -1;
+
+	if (access(cinfo->reportfile, F_OK) == 0) {
+		ret = unlink(cinfo->reportfile);
+		if (ret < 0) {
+			ret = -errno;
+			_SE("Failed to remove(file:%s, errno:%d)", cinfo->reportfile, ret);
+			return ret;
+		}
+	}
+
 	csfd = creat(cinfo->reportfile,
 			(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH));
 	if (csfd < 0) {
@@ -469,7 +484,7 @@ static int write_version_info(struct crash_info *cinfo)
 	}
 	/* print version info */
 	fprintf(csfp, "%s\n", CRASH_SW_VERSIONINFO_TITLE);
-	if (system_info_get_value_string(SYSTEM_INFO_KEY_MODEL, &model) < 0) {
+	if (system_info_get_platform_string("http://tizen.org/system/model_name", &model) < 0) {
 		ret = -1;
 		goto exit;
 	}
@@ -477,7 +492,7 @@ static int write_version_info(struct crash_info *cinfo)
 		fprintf(csfp, "Model: %s\n", model);
 		free(model);
 	}
-	if (system_info_get_value_string(SYSTEM_INFO_KEY_TIZEN_VERSION,
+	if (system_info_get_platform_string("http://tizen.org/feature/platform.version",
 				&tizenversion) < 0) {
 		ret = -1;
 		goto exit;
@@ -486,7 +501,7 @@ static int write_version_info(struct crash_info *cinfo)
 		fprintf(csfp, "Tizen-Version: %s\n", tizenversion);
 		free(tizenversion);
 	}
-	if (system_info_get_value_string(SYSTEM_INFO_KEY_BUILD_STRING,
+	if (system_info_get_platform_string("http://tizen.org/system/build.string",
 				&buildstring) < 0) {
 		ret = -1;
 		goto exit;
@@ -495,12 +510,12 @@ static int write_version_info(struct crash_info *cinfo)
 		fprintf(csfp, "Build-Number: %s\n", buildstring);
 		free(buildstring);
 	}
-	if (system_info_get_value_string(SYSTEM_INFO_KEY_BUILD_DATE,
+	if (system_info_get_platform_string("http://tizen.org/system/build.date",
 				&builddate) < 0) {
 		ret = -1;
 		goto exit;
 	}
-	if (system_info_get_value_string(SYSTEM_INFO_KEY_BUILD_TIME,
+	if (system_info_get_platform_string("http://tizen.org/system/build.time",
 				&buildtime) < 0) {
 		ret = -1;
 		goto exit;
@@ -1212,8 +1227,6 @@ static void worker_job(gpointer data, gpointer user_data)
 	publish_report(cinfo);
 
 	broadcast_crash(manager->conn, cinfo->processname, cinfo->exepath);
-
-	journal_system_force_closed(cinfo->processname);
 
 	if (unlink(cinfo->infofile) < 0)
 		_W("Failed to unlink (%s)", cinfo->infofile);

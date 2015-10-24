@@ -9,14 +9,14 @@
 		<smack request="device::app_logging" type="rwxat" />
 		<smack request="device::sys_logging" type="rwxat" />
 		<smack request="system::homedir" type="rwxat" />
-		<smack request="system::vconf" type="rwxat" />
+		<smack request="tizen::vconf::platform::r" type="rw" />
 		<smack request="system::media" type="rwxat" />
 		<smack request="system::share" type="rwxat" />
 		<smack request="system::use_internet" type="rw" />
 		<smack request="xorg" type="rw" />
 		<smack request="pkgmgr::db" type="rw" />
 		<smack request="dbus" type="rwx" />
-		<smack request="com.samsung.crash-popup" type="rx" />
+		<smack request="org.tizen.crash-popup" type="rx" />
 	</request>
 	<permit>
 		<smack permit="system::use_internet" type="rwx"/>
@@ -36,7 +36,7 @@
 		<filesystem path="/usr/bin/dump_log.sh" label="_" exec_label="none"/>
 		<filesystem path="/usr/bin/dump_systemstate" label="_" exec_label="none"/>
 		<filesystem path="/usr/lib/udev/rules.d/92-all-log-dump.rules" label="_" exec_label="none"/>
-		<filesystem path="/usr/share/dbus-1/services/org.tizen.system.crash.service" label="_" exec_label="none"/>
+		<filesystem path="/usr/share/dbus-1/system-services/org.tizen.system.crash.service" label="_" exec_label="none"/>
 		<dbus name="org.tizen.system.crash" own="crash-worker" bus="system">
 			<node name="/Org/Tizen/System/Crash/Crash">
 				<interface name="org.tizen.system.crash.Crash">

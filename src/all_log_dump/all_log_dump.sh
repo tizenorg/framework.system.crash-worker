@@ -99,7 +99,7 @@ fi
 #-------------------------------------
 # remove ap log dump
 #-------------------------------------
-/bin/rm -rf /tmp/*.info
+/bin/rm -rf /tmp/crach_info/*.info
 /bin/rm -rf /opt/usr/share/crash/core/*
 /bin/rm -rf /opt/usr/share/crash/dump/*
 

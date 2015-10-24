@@ -3,6 +3,9 @@ Description=Start the crash manager service
 After=dbus.socket
 
 [Service]
+User=system
+Group=system
+SmackProcessLabel=crash-worker
 ExecStart=/usr/bin/crash-manager
 
 [Install]

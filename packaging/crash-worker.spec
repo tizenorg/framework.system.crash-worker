@@ -14,7 +14,6 @@ BuildRequires:  pkgconfig(capi-system-info)
 BuildRequires:  pkgconfig(pkgmgr-info)
 BuildRequires:  pkgconfig(libsystemd-journal)
 BuildRequires:  pkgconfig(libsystemd-daemon)
-BuildRequires:  pkgconfig(journal)
 BuildRequires:  sys-assert
 BuildRequires:  cmake
 
@@ -51,8 +50,10 @@ rm -rf %{buildroot}
 %make_install
 mkdir -p %{buildroot}/usr/share/license
 mkdir -p %{buildroot}%{_libdir}/systemd/system/sockets.target.wants
+mkdir -p %{buildroot}%{_libdir}/systemd/system/basic.target.wants
 mkdir -p %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants
 ln -s ../crash-manager.socket %{buildroot}%{_libdir}/systemd/system/sockets.target.wants/crash-manager.socket
+ln -s ../crash-env.service %{buildroot}%{_libdir}/systemd/system/basic.target.wants/crash-env.service
 ln -s ../crash-manager.service %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants/crash-manager.service
 mkdir -p %{buildroot}/opt/usr/share/crash
 mkdir -p %{buildroot}/opt/usr/share/crash/core
@@ -79,7 +80,7 @@ fi
 
 %files
 %manifest crash-worker.manifest
-%defattr(-,root,root,-)
+%defattr(-,system,system,-)
 /usr/bin/crash-manager
 /etc/crash/crash-manager.conf
 /usr/share/license/%{name}
@@ -88,14 +89,17 @@ fi
 %{_libdir}/systemd/system/multi-user.target.wants/crash-manager.service
 %{_libdir}/systemd/system/crash-manager.socket
 %{_libdir}/systemd/system/sockets.target.wants/crash-manager.socket
-/usr/share/dbus-1/services/org.tizen.system.crash.service
-%attr(775,root,crash) %dir /opt/usr/share/crash
-%attr(775,root,crash) %dir /opt/usr/share/crash/dump
-%attr(775,root,crash) %dir /opt/usr/share/crash/core
-%attr(775,root,crash) %dir /opt/usr/share/crash/report
-%attr(0750,root,input)/usr/bin/crashctl
-%attr(0744,root,root)/usr/bin/all_log_dump.sh
-%attr(0744,root,root)/usr/bin/dump_log.sh
-%attr(0755,root,root)/usr/bin/dump_systemstate
-%attr(0644,root,root)/usr/lib/systemd/system/all_log_dump.service
-%attr(0644,root,root)/usr/lib/udev/rules.d/92-all-log-dump.rules
+%{_libdir}/systemd/system/crash-env.service
+%{_libdir}/systemd/system/basic.target.wants/crash-env.service
+/usr/share/dbus-1/system-services/org.tizen.system.crash.service
+%attr(775,system,crash) %dir /opt/usr/share/crash
+%attr(775,system,crash) %dir /opt/usr/share/crash/dump
+%attr(775,system,crash) %dir /opt/usr/share/crash/core
+%attr(775,system,crash) %dir /opt/usr/share/crash/report
+%attr(0750,system,input)/usr/bin/crashctl
+%attr(0744,system,system)/usr/bin/all_log_dump.sh
+%attr(0744,system,system)/usr/bin/dump_log.sh
+%attr(0744,system,system)/usr/bin/crash_env.sh
+%attr(0755,system,system)/usr/bin/dump_systemstate
+%attr(0644,system,system)/usr/lib/systemd/system/all_log_dump.service
+%attr(0644,system,system)/usr/lib/udev/rules.d/92-all-log-dump.rules

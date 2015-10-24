@@ -2,4 +2,4 @@
 Name=org.tizen.system.crash
 Exec=/bin/false
 SystemdService=crash-manager.service
-User=root
+User=system

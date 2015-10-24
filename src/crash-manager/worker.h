@@ -26,7 +26,7 @@
 
 #include "manager.h"
 
-#define CRASH_INFO_PATH             "/tmp"
+#define CRASH_INFO_PATH             "/tmp/crash_info"
 #define CRASH_COREDUMP_PATH         "/opt/usr/share/crash/core"
 #define CRASH_DUMP_PATH             "/opt/usr/share/crash/dump"
 #define CRASH_REPORT_PATH           "/opt/usr/share/crash/report"
